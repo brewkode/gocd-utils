@@ -77,16 +77,18 @@ class Pipelines(object):
 		return param_map
 
 	def unused_parameters(self, pipeline_name):
-		PARAM_REGEX = re.compile(".*#\\{([^\\}]+)\\}.*", re.M|re.I)
+		PARAM_REGEX = re.compile("#\\{([\w]+)\\}", re.M|re.I)
 		parameters = self.parameter_map(pipeline_name)
 		keys = set(parameters.keys())
 		tasks = self.tasks_for(pipeline_name)
 		used_keys = []
 		for task in tasks:
-			task_str = "%s" % task
-			matches = PARAM_REGEX.search(task_str)
-			if matches:
-				used_keys.extend(list(matches.groups()))
+			task_str = str(task)
+			for line in task_str.split("\n"):
+				matches = PARAM_REGEX.findall(line)
+				if matches:
+					used_keys.extend(list(matches))
+
 		used = set(used_keys)
 		unused = keys.difference(used)
 		return unused
@@ -113,5 +115,7 @@ if __name__ == '__main__':
 	pipelines = Pipelines(cfg.pipeline_map, cfg.template_map)
 	pipeline_with_group = pipeline_group+"_"+pipeline_name
 	unused_params = pipelines.unused_parameters(pipeline_with_group)
+	print "Pipeline group: %s, name: %s" % (pipeline_group, pipeline_name)
+	print "# of unused parameters %s" % (len(unused_params))
 	print unused_params
 	pass
