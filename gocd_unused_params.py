@@ -89,14 +89,6 @@ class Pipelines(object):
 				used_keys.extend(list(matches.groups()))
 		used = set(used_keys)
 		unused = keys.difference(used)
-		print "**********       PIPELINE=(%s)     ***********" % pipeline_name
-		print "**********       CONFIGURED(%s)     ***********" % len(keys)
-		print keys
-		print "************        USED(%s)     **************" % len(used)
-		print used
-
-		print "************      UNUSED(%s)     **************" % len(unused)
-		print unused
 		return unused
 
 
